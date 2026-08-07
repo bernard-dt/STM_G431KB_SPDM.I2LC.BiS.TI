@@ -1,0 +1,10 @@
+../Src/Core/BissReader/Breader_Usart.c:26:6:USART2_Init	5
+../Src/Core/BissReader/Breader_Usart.c:57:6:USART2_IRQHandler	1
+../Src/Core/BissReader/Breader_Usart.c:62:6:HAL_USART2_RxCpltCallback	2
+../Src/Core/BissReader/Breader_Usart.c:69:12:GetByteFromHostPc	4
+../Src/Core/BissReader/Breader_Usart.c:99:6:ParseCmdFromHostPC	7
+../Src/Core/BissReader/Breader_Usart.c:127:6:UartSendData	1
+../Src/Core/BissReader/Breader_Usart.c:132:6:HandleCmdFromHostPc	3
+../Src/Core/BissReader/Breader_Usart.c:145:6:UartPrint	2
+../Src/Core/BissReader/Breader_Usart.c:165:6:HAL_UART_MspInit	3
+../Src/Core/BissReader/Breader_Usart.c:195:6:HAL_UART_MspDeInit	2

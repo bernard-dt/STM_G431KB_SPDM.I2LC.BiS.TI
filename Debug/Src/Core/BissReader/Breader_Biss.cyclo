@@ -1,0 +1,3 @@
+../Src/Core/BissReader/Breader_Biss.c:28:4:Encoder_BiSS_CRC_Calculate	1
+../Src/Core/BissReader/Breader_Biss.c:60:5:GetAngle_FromBiSS	6
+../Src/Core/BissReader/Breader_Biss.c:133:5:GetAngle_FromSSI	3

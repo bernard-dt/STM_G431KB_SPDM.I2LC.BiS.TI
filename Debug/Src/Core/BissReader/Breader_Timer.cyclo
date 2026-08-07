@@ -1,0 +1,5 @@
+../Src/Core/BissReader/Breader_Timer.c:19:6:TIM1_Init	4
+../Src/Core/BissReader/Breader_Timer.c:51:6:TIM1_UP_TIM16_IRQHandler	1
+../Src/Core/BissReader/Breader_Timer.c:56:6:HAL_TIM_PeriodElapsedCallback	2
+../Src/Core/BissReader/Breader_Timer.c:99:6:HAL_TIM_Base_MspInit	2
+../Src/Core/BissReader/Breader_Timer.c:110:6:HAL_TIM_Base_MspDeInit	2

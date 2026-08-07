@@ -1,0 +1,11 @@
+../Src/Core/BissReader/Breader_Main.c:76:5:main	16	static
+../Src/Core/BissReader/Breader_Main.c:158:6:HAL_MspInit	16	static
+../Src/Core/BissReader/Breader_Main.c:166:6:SystemClock_Config	88	static
+../Src/Core/BissReader/Breader_Main.c:229:6:GPIO_Init	40	static
+../Src/Core/BissReader/Breader_Main.c:255:6:LED2_Init	32	static
+../Src/Core/BissReader/Breader_Main.c:267:6:LED2_On	8	static
+../Src/Core/BissReader/Breader_Main.c:271:6:LED2_Off	8	static
+../Src/Core/BissReader/Breader_Main.c:275:6:LED2_Toggle	8	static
+../Src/Core/BissReader/Breader_Main.c:280:6:ProtocolConfigCheck	24	static
+../Src/Core/BissReader/Breader_Main.c:307:6:LcdDisplayUpdate	40	static
+../Src/Core/BissReader/Breader_Main.c:341:6:Error_Handler	4	static,ignoring_inline_asm

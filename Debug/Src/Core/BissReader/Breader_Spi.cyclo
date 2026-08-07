@@ -1,0 +1,7 @@
+../Src/Core/BissReader/Breader_Spi.c:36:6:SPI1_Init	2
+../Src/Core/BissReader/Breader_Spi.c:69:6:SPI1_IRQHandler	1
+../Src/Core/BissReader/Breader_Spi.c:86:6:ManagingReceivedData	2
+../Src/Core/BissReader/Breader_Spi.c:106:6:HAL_SPI_TxRxCpltCallback	2
+../Src/Core/BissReader/Breader_Spi.c:129:6:HAL_SPI_ErrorCallback	1
+../Src/Core/BissReader/Breader_Spi.c:134:6:HAL_SPI_MspInit	4
+../Src/Core/BissReader/Breader_Spi.c:218:6:HAL_SPI_MspDeInit	2

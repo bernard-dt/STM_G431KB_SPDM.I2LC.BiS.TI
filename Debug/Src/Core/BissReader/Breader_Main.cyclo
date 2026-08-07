@@ -1,0 +1,11 @@
+../Src/Core/BissReader/Breader_Main.c:76:5:main	8
+../Src/Core/BissReader/Breader_Main.c:158:6:HAL_MspInit	1
+../Src/Core/BissReader/Breader_Main.c:166:6:SystemClock_Config	3
+../Src/Core/BissReader/Breader_Main.c:229:6:GPIO_Init	1
+../Src/Core/BissReader/Breader_Main.c:255:6:LED2_Init	1
+../Src/Core/BissReader/Breader_Main.c:267:6:LED2_On	1
+../Src/Core/BissReader/Breader_Main.c:271:6:LED2_Off	1
+../Src/Core/BissReader/Breader_Main.c:275:6:LED2_Toggle	1
+../Src/Core/BissReader/Breader_Main.c:280:6:ProtocolConfigCheck	4
+../Src/Core/BissReader/Breader_Main.c:307:6:LcdDisplayUpdate	4
+../Src/Core/BissReader/Breader_Main.c:341:6:Error_Handler	1
