@@ -1,9 +1,21 @@
 #include "BreaderConfig.h"
 #include "BreaderTypes.h"
 
+// Prescaleer : 10US 
+#define PRESCALE_FOR_10US     800
+// 2khz
+#define PERIOD_ARR_50         50
+// 1khz
+#define PERIOD_ARR_200        100
+// 100 z
+#define PERIOD_ARR_1000       1000
 
-#define PRESCALE_FOR_100US    7999
-#define PRESCALE_FOR_10US     799
+// Prescaleer : 100US 
+#define PRESCALE_FOR_100US    8000
+// 1khz
+#define PERIOD_ARR_10         10
+// 100hz
+#define PERIOD_ARR_100         100
 
 
 
@@ -23,12 +35,13 @@ void TIM1_Init(void)
 
 	// 10 ms = 100Hz 
 	htim1.Instance = TIM1;
-	htim1.Init.Prescaler = PRESCALE_FOR_100US;
+	htim1.Init.Prescaler = (PRESCALE_FOR_10US-1);
 	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-	htim1.Init.Period = (100-1);  // should be less than 2 bytes  => 100 Hz
+	htim1.Init.Period = (PERIOD_ARR_100-1);         // should be less than 2 bytes  => 100 Hz
 	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	htim1.Init.RepetitionCounter = 0;
-	htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	//htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
 
 	if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
 	{
@@ -115,5 +128,28 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 
 		HAL_NVIC_DisableIRQ(TIM1_UP_TIM16_IRQn);
 	}
+}
+
+void ChangeReadFrequency(U32 u32Tick)
+{
+	U32 u32Var;
+	static U32 u32FreqVar = 0;
+	static U32 u32Dir = 0;
+
+	if(PERIOD_ARR_100/2 < u32FreqVar)
+	{
+		u32Dir = 1;
+	}
+	else if( u32FreqVar < 1)
+	{
+		u32Dir = 0;
+	}
+
+	(u32Dir == 0) ? u32FreqVar++:u32FreqVar--;
+
+
+	u32Var = (PERIOD_ARR_100 -1) - u32FreqVar;
+    //__HAL_TIM_SET_PRESCALER(&htim1, (PRESCALE_FOR_10US -1) );
+    __HAL_TIM_SET_AUTORELOAD(&htim1, (u32Var));
 }
 

@@ -85,21 +85,34 @@ void SPI1_IRQHandler(void)
 
 void ManagingReceivedData(void)
 {
-	U32 u32Temp =0;
-	gstBreaderData.u32BitData = gstBreaderData.u32ReceivedData >> auShiftLen[gstBreaderData.u32Pbit][gstBreaderData.u32Ptype];
+	S32 s32Temp =0;
+	gstBreaderData.u32BitData = gstBreaderData.u32ReceivedData >> auShiftLen[gstBreaderData.ProtoBit][gstBreaderData.ProtoType];
 
-	if(gstBreaderData.u32Ptype == PROTOCOL_BISS)
+	if(gstBreaderData.ProtoType == PROTOCOL_BISS)
 	{
-		gstBreaderData.u32AngleE5 = GetAngle_FromBiSS(gstBreaderData.u32BitData,gstBreaderData.u32Pbit);
+		gstBreaderData.u32AngleE5 = GetAngle_FromBiSS(gstBreaderData.u32BitData,gstBreaderData.ProtoBit);
 	}
 	else
 	{
-		gstBreaderData.u32AngleE5 = GetAngle_FromSSI(gstBreaderData.u32BitData,gstBreaderData.u32Pbit);
+		gstBreaderData.u32AngleE5 = GetAngle_FromSSI(gstBreaderData.u32BitData,gstBreaderData.ProtoBit);
 	}
 
-	u32Temp = (gstBreaderData.u32AngleE5 - gstBreaderData.u32AngleE5Prev);
-	gstBreaderData.s32AngleDiffE5 = (gstBreaderData.u32AngleE5 - gstBreaderData.u32AngleE5Prev);
+	s32Temp = (gstBreaderData.u32AngleE5 - gstBreaderData.u32AngleE5Prev);
+	if(s32Temp <0) s32Temp = -s32Temp;
 
+	if(gstBreaderData.u32DispStackCnt == 0)
+	{
+		gstBreaderData.u32AngleDiffE5 = s32Temp;
+		gstBreaderData.u32DispStackCnt = 1;
+	}
+	else
+	{
+		gstBreaderData.u32DispStackCnt++;
+		if(gstBreaderData.u32AngleDiffE5 < s32Temp)
+		{
+			gstBreaderData.u32AngleDiffE5 = s32Temp;
+		}
+	}
 	gstBreaderData.u32AngleE5Prev = gstBreaderData.u32AngleE5;
 }
 
