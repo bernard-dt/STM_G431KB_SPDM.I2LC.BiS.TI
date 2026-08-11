@@ -107,4 +107,11 @@ typedef struct {
     uint8_t address;            // I2C address of the LCD
 } I2C_LCD_HandleTypeDef;
 
+
+typedef struct{
+	U32 u32Data[512];
+}structUserData;
+
+
+
 #endif /* INC_TYPES_H_ */

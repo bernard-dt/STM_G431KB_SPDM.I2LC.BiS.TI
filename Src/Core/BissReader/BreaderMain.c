@@ -14,9 +14,8 @@
 #define LCD_MAX             17
 #define STR_STATE           2
 #define STR_ALARM           2
-#define STR_TOGGLE1         2
-#define STR_TOGGLE2         2
-#define STR_ARROW         2
+#define STR_TOGGLE          2
+#define STR_ARROW           2
 #define STR_PRT_ERR         2
 
 const U8 * auStringOfProto[5][2] =
@@ -28,17 +27,10 @@ const U8 * auStringOfProto[5][2] =
 	{"S21","B21"}
 };
 
-const U8 * auStrToggle1[STR_TOGGLE1] =
+const U8 * SauStrToggle[STR_TOGGLE] =
 {
 	"\xff",
 	" ",
-	//"\x7e",	
-};
-
-const U8 * auStrToggle2[STR_TOGGLE2] =
-{
-	"\xff",
-	"\xff",
 	//"\x7e",	
 };
 
@@ -61,6 +53,7 @@ const U8 * auStrProtErr[STR_PRT_ERR] =
 
 
 structBreaderData gstBreaderData;
+structUserData gstUserData;
 U8 aubRow1Str[17];
 U8 aubRow2Str[17];
 U32 gu32DispCnt;
@@ -117,12 +110,9 @@ int main(void)
 	I2C1_Init();
 	LCD16x2_Init();
 
-	TIM1_Init();	
-
+	TIM1_Init();
 	SPI1_Init();	
 
-    u32ModeTimer = u32Tick;
-	u32LcdTimer = u32Tick;
 
 #if 0
     UartPrint("\r\nSYSCLK   : %d Hz", HAL_RCC_GetSysClockFreq()); // HSI PLL
@@ -135,16 +125,18 @@ int main(void)
 	HAL_Delay(10);	
 #endif
 
-	// debug 
-
 	ProtocolConfigCheck();
 
-	gstBreaderData.u32AngleE5   = 0;
-	gstBreaderData.u32AngleDiffE5 = 0;
-    gstBreaderData.u32CommError = NO_ERROR;
+
 
 	HAL_TIM_Base_Start_IT(&htim1);
 
+	ReadDataPage63();
+
+	
+
+    u32ModeTimer = u32Tick;
+	u32LcdTimer = u32Tick;
 	while (1)
 	{
 		ParseCmdFromHostPC();
@@ -336,11 +328,11 @@ void LcdDisplayUpdate(void)
 
 	if(gstBreaderData.u32CommError == NO_ERROR )
 	{
-		snprintf(aubRow1Str,LCD_MAX,"%s[%s] %4dHz  %s",auStrToggle1[gu32DispCnt%STR_TOGGLE1],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType], \
-		                          gstBreaderData.u32DispStackCnt,auStrToggle1[gu32DispCnt%STR_TOGGLE1]);
+		snprintf(aubRow1Str,LCD_MAX,"%s[%s] %4dHz  %s",SauStrToggle[gu32DispCnt%STR_TOGGLE],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType], \
+		                          gstBreaderData.u32DispStackCnt,SauStrToggle[gu32DispCnt%STR_TOGGLE]);
 		if((gstBreaderData.u32AngleDiffE5 >= 100000))
 		{
-			snprintf(aubRow2Str,LCD_MAX," %7.3f {OVR 1}",(F32)gstBreaderData.u32AngleE5*0.00001f);
+			snprintf(aubRow2Str,LCD_MAX," %7.3f {>.999}",(F32)gstBreaderData.u32AngleE5*0.00001f);
 		}
 		else
 		{					
@@ -349,7 +341,7 @@ void LcdDisplayUpdate(void)
 	}
 	else
 	{
-		snprintf(aubRow1Str,LCD_MAX,"%s[%s]  FAIL   %s   ",auStrToggle1[gu32DispCnt%STR_TOGGLE1],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType],auStrToggle1[gu32DispCnt%STR_TOGGLE1]);
+		snprintf(aubRow1Str,LCD_MAX,"%s[%s]  FAIL   %s   ",SauStrToggle[gu32DispCnt%STR_TOGGLE],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType],SauStrToggle[gu32DispCnt%STR_TOGGLE]);
 		snprintf(aubRow2Str,LCD_MAX," %s%s        ",auStrArrow[gu32DispCnt%STR_ARROW],auStrProtErr[gstBreaderData.ProtoType]);			
 	}
 
