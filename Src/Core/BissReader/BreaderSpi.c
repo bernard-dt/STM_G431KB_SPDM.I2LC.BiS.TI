@@ -45,9 +45,9 @@ void SPI1_Init(void)
 	//hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
 	hspi1.Init.NSS = SPI_NSS_SOFT;
 	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;              // 80M ->10M  , 40M ->5M  (NG)
-	hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;               // 80M ->5M   , 40M ->2.5M  (ok)
-	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;             // 80M ->2.5M , 40M ->1.25M
+	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;               // 80M ->10M  , 40M ->5M  (NG)
+	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;              // 80M ->5M   , 40M ->2.5M  (ok)
+	hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_32;                // 80M ->2.5M , 40M ->1.25M
 	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;          
 	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;         
 	//hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;            // 80M ->312.5K , 40M ->156.2K  (ok)
@@ -114,6 +114,30 @@ void ManagingReceivedData(void)
 		}
 	}
 	gstBreaderData.u32AngleE5Prev = gstBreaderData.u32AngleE5;
+}
+
+void SendSpiClock(void)
+{
+	U32 ulRet;
+	
+	if (HAL_SPI_GetState(&hspi1) == HAL_SPI_STATE_READY)
+	{
+#if 1   // 8 bit		
+		gstSpiTxRxBuf.aubTxBuf[0] = 0;
+		gstSpiTxRxBuf.aubTxBuf[1] = 0;
+		gstSpiTxRxBuf.aubTxBuf[2] = 0;
+		gstSpiTxRxBuf.aubTxBuf[3] = 0;
+		//ulRet = HAL_SPI_TransmitReceive_IT(&hspi1,gstSpiTxRxBuf.aubTxBuf,gstSpiTxRxBuf.aubRxBuf,4);
+		ulRet = HAL_SPI_TransmitReceive_DMA(&hspi1,gstSpiTxRxBuf.aubTxBuf,gstSpiTxRxBuf.aubRxBuf,4);
+#else   // 16 bit
+		CLEAR_BIT(hspi1.Instance->CR2, SPI_CR2_FRXTH);
+
+		gstSpiTxRxBuf.auwTxBuf[0] = 0xffaa;
+		gstSpiTxRxBuf.auwTxBuf[1] = 0xee55;
+		ulRet = HAL_SPI_TransmitReceive_DMA(&hspi1,(U8*)gstSpiTxRxBuf.auwTxBuf,(U8*)gstSpiTxRxBuf.auwRxBuf,2);
+#endif 
+	}
+
 }
 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)

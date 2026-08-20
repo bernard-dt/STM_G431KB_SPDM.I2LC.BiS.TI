@@ -109,7 +109,7 @@ typedef struct {
 
 
 typedef struct{
-	U32 u32Data[512];
+	U32 u32Data[512];   // 2kb
 }structUserData;
 
 

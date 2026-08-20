@@ -72,6 +72,10 @@ extern I2C_LCD_HandleTypeDef hlcd;
 // timer
 extern TIM_HandleTypeDef htim1;
 extern U32 u32Timer1Cnt;
+extern TIM_HandleTypeDef htim6;
+extern U32 u32Timer6Cnt;
+extern TIM_HandleTypeDef htim7;
+extern U32 u32Timer7Cnt;
 
 // spi
 extern structSpiTxRxBuf gstSpiTxRxBuf;
@@ -83,7 +87,8 @@ extern U32 u32SpiTxDmaCnt;
 extern U32 u32SpiRxDmaCnt;
 
 // Function
-void ChangeReadFrequency(U32 u32Tick);
+void ChangeReadTmFrequency(U32 u32Tick, TIM_HandleTypeDef *htim);
+
 
 
 
@@ -109,8 +114,12 @@ int main(void)
 
 	I2C1_Init();
 	LCD16x2_Init();
+	
+	//UartPrint("\r\nA");
 
 	TIM1_Init();
+	TIM6_Init();
+	TIM7_Init();
 	SPI1_Init();	
 
 
@@ -127,16 +136,19 @@ int main(void)
 
 	ProtocolConfigCheck();
 
+	//UartPrint("\r\nB");
 
-
-	HAL_TIM_Base_Start_IT(&htim1);
+	//HAL_TIM_Base_Start_IT(&htim1);
+	//HAL_TIM_Base_Start_IT(&htim6);
+	HAL_TIM_Base_Start_IT(&htim7);
 
 	ReadDataPage63();
 
-	
+	//UartPrint("\r\nC");
 
     u32ModeTimer = u32Tick;
 	u32LcdTimer = u32Tick;
+	//gstBreaderData.u32CommError = COMM_ERROR;
 	while (1)
 	{
 		ParseCmdFromHostPC();
@@ -151,7 +163,8 @@ int main(void)
 			if(((u32Tick - u32FreqTimer) >= 5000) || (u32Tick < u32FreqTimer))
 			{
 				u32FreqTimer = u32Tick;
-				ChangeReadFrequency(u32Tick);
+				ChangeReadTmFrequency(u32Tick,&htim7);
+				
 			}
 		}
 		else
@@ -167,7 +180,7 @@ int main(void)
 		if(((u32Tick - u32ModeTimer) >= 2000) || (u32Tick < u32ModeTimer))
 		{
 			u32ModeTimer = u32Tick;
-			UartPrint("\r\nT=%d, CRC_Error[%d]",u32Timer1Cnt,gstBreaderData.u32CrcErrCnt);
+			UartPrint("\r\nT1=%d, T6=%d CRC_Error[%d]",u32Timer1Cnt,u32Timer6Cnt,gstBreaderData.u32CrcErrCnt);
 		}
 #endif		
 	}
@@ -232,7 +245,8 @@ void SystemClock_Config(void)
 #endif 
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;           // 80MHz
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;           // 40MHz  spi 
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;           // 80MHz  spi 
+	//RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;           // 40MHz  spi 
 
 #if 0	
 	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
