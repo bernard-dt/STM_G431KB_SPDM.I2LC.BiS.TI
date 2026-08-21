@@ -12,10 +12,9 @@
 #define PROTO_GPIO_PORT        GPIOA
 
 #define LCD_MAX             17
-#define STR_STATE           2
+#define STR_RUNNING         2
 #define STR_ALARM           2
-#define STR_TOGGLE          2
-#define STR_ARROW           2
+#define STR_ARROW           5
 #define STR_PRT_ERR         2
 
 const U8 * auStringOfProto[5][2] =
@@ -27,28 +26,34 @@ const U8 * auStringOfProto[5][2] =
 	{"S21","B21"}
 };
 
-const U8 * SauStrToggle[STR_TOGGLE] =
+const U8 * strClockSpeed = "2.5";
+
+const U8 * auStrRunning[STR_RUNNING] =
 {
-	"\xff",
-	" ",
+	"\x7c",
+	":",
 	//"\x7e",	
 };
 
 const U8 * auStrAlarm[STR_ALARM] =
 {
-	"*",
-	" ",
+	"FAIL!!",
+	"      ",
 };
 
-const U8 * auStrArrow[STR_PRT_ERR] =
+const U8 * auStrArrow[STR_ARROW] =
 {
-	"\x7e",
-	" "};
+	"\x7e   ",
+	"\x7e\x7e  ",	
+	" \x7e\x7e ",	
+	"  \x7e\x7e",
+	"   \x7e"	
+};
 
 const U8 * auStrProtErr[STR_PRT_ERR] =
 {
 	"INVALID DATA",
-	" CRC ERROR "	
+	"BiSS CRC ERR"	
 };
 
 
@@ -185,6 +190,63 @@ int main(void)
 #endif		
 	}
 }
+
+
+void LcdDisplayUpdate(void)
+{
+	//lcd_clear(&hlcd);
+
+#if 1
+	if(gstBreaderData.u32CommError == NO_ERROR )
+	{
+		snprintf(aubRow1Str,LCD_MAX,"[%s%s%s] %4dHz ",auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType], \
+		                                               auStrRunning[gu32DispCnt%STR_RUNNING],strClockSpeed,gstBreaderData.u32DispStackCnt);
+		if((gstBreaderData.u32AngleDiffE5 >= 100000))
+		{
+			snprintf(aubRow2Str,LCD_MAX,"%08.4f -OVER 1  ",(F32)gstBreaderData.u32AngleE5*0.00001f);
+		}
+		else
+		{	
+			snprintf(aubRow2Str,LCD_MAX,"%08.4f -0.%04d  ",(F32)gstBreaderData.u32AngleE5*0.00001f,(U32)(gstBreaderData.u32AngleDiffE5*0.1f) );												
+		}		
+	}
+	else
+	{
+		snprintf(aubRow1Str,LCD_MAX,"[%s%s%s] %s ",auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType],auStrRunning[gu32DispCnt%STR_RUNNING],strClockSpeed,auStrAlarm[gu32DispCnt%STR_ALARM],auStrAlarm[gu32DispCnt%STR_ALARM]);		
+		snprintf(aubRow2Str,LCD_MAX,"%s%s        ",auStrArrow[gu32DispCnt%STR_ARROW],auStrProtErr[gstBreaderData.ProtoType]);			
+	}
+#else
+	if(gstBreaderData.u32CommError == NO_ERROR )
+	{
+		snprintf(aubRow1Str,LCD_MAX,"%s[%s] %4dHz  %s",auStrToggle[gu32DispCnt%STR_TOGGLE],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType], \
+		                          gstBreaderData.u32DispStackCnt,auStrToggle[gu32DispCnt%STR_TOGGLE]);
+		if((gstBreaderData.u32AngleDiffE5 >= 100000))
+		{
+			snprintf(aubRow2Str,LCD_MAX," %7.3f {>.999}",(F32)gstBreaderData.u32AngleE5*0.00001f);
+		}
+		else
+		{					
+			snprintf(aubRow2Str,LCD_MAX," %7.3f {.%04d}",(F32)gstBreaderData.u32AngleE5*0.00001f,(U32)(gstBreaderData.u32AngleDiffE5*0.1f) );					
+		}		
+	}
+	else
+	{
+		snprintf(aubRow1Str,LCD_MAX,"%s[%s]  FAIL   %s   ",auStrToggle[gu32DispCnt%STR_TOGGLE],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType],auStrToggle[gu32DispCnt%STR_TOGGLE]);
+		snprintf(aubRow2Str,LCD_MAX," %s%s        ",auStrArrow[gu32DispCnt%STR_ARROW],auStrProtErr[gstBreaderData.ProtoType]);			
+	}
+#endif
+	gstBreaderData.u32DispStackCnt = 0;
+
+	lcd_gotoxy(&hlcd,0,0);
+	lcd_puts(&hlcd,&aubRow1Str[0]);
+
+	lcd_gotoxy(&hlcd,0,1);
+	lcd_puts(&hlcd,&aubRow2Str[0]);	
+
+	gu32DispCnt++;	
+}
+
+
 
 void HAL_MspInit(void)
 {
@@ -336,39 +398,6 @@ void ProtocolConfigCheck(void)
 	gstBreaderData.ProtoBit = PROTOCOL_BIT_19;		
 }
 
-void LcdDisplayUpdate(void)
-{
-	//lcd_clear(&hlcd);
-
-	if(gstBreaderData.u32CommError == NO_ERROR )
-	{
-		snprintf(aubRow1Str,LCD_MAX,"%s[%s] %4dHz  %s",SauStrToggle[gu32DispCnt%STR_TOGGLE],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType], \
-		                          gstBreaderData.u32DispStackCnt,SauStrToggle[gu32DispCnt%STR_TOGGLE]);
-		if((gstBreaderData.u32AngleDiffE5 >= 100000))
-		{
-			snprintf(aubRow2Str,LCD_MAX," %7.3f {>.999}",(F32)gstBreaderData.u32AngleE5*0.00001f);
-		}
-		else
-		{					
-			snprintf(aubRow2Str,LCD_MAX," %7.3f {.%04d}",(F32)gstBreaderData.u32AngleE5*0.00001f,(U32)(gstBreaderData.u32AngleDiffE5*0.1f) );					
-		}		
-	}
-	else
-	{
-		snprintf(aubRow1Str,LCD_MAX,"%s[%s]  FAIL   %s   ",SauStrToggle[gu32DispCnt%STR_TOGGLE],auStringOfProto[gstBreaderData.ProtoBit][gstBreaderData.ProtoType],SauStrToggle[gu32DispCnt%STR_TOGGLE]);
-		snprintf(aubRow2Str,LCD_MAX," %s%s        ",auStrArrow[gu32DispCnt%STR_ARROW],auStrProtErr[gstBreaderData.ProtoType]);			
-	}
-
-	gstBreaderData.u32DispStackCnt = 0;
-
-	lcd_gotoxy(&hlcd,0,0);
-	lcd_puts(&hlcd,&aubRow1Str[0]);
-
-	lcd_gotoxy(&hlcd,0,1);
-	lcd_puts(&hlcd,&aubRow2Str[0]);	
-
-	gu32DispCnt++;	
-}
 
 /* Debug Handler */
 void Error_Handler(void)

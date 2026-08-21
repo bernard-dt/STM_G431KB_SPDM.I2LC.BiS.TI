@@ -93,12 +93,13 @@ typedef struct{
 	U32 u32BitData;
 	U32 u32AngleE5;
 	U32 u32AngleE5Prev;
+	U32 u32AngleDiffE5;
 	U32 ProtoType;
-	U32 ProtoBit;	
+	U32 ProtoBit;
+	U32 u32DispStackCnt;
 	U32 u32CommError;           // 0 : OK,  1 : Error
 	U32 u32CrcErrCnt;
-	U32 u32AngleDiffE5;
-	U32 u32DispStackCnt;
+
 }structBreaderData;
 
 
